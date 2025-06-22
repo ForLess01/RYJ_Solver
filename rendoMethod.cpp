@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>  // utilizada para lograr un tamano variable o dinamico de las tablas utilizadas.
 #include <iomanip> // espaciado para la impresion de la tabla final combinada
 using namespace std;
 
@@ -35,8 +34,8 @@ int main()
         return 1;
     }
 
-    vector<vector<int>> tablaCost(filas, vector<int>(columnas));
-    vector<vector<int>> tablaVal(filas + 1, vector<int>(columnas + 1, 0));
+    int tablaCost [filas][columnas];
+    int tablaVal [filas+1][columnas+1] = {0}; // Inicializar la tabla de costos con ceros
 
     cout << "Introduzca los costos para cada celda de la tabla(fila * fila):" << endl;
     for (int i = 0; i < filas; i++)
@@ -70,7 +69,7 @@ int main()
         return 0;
     }
 
-    vector<vector<int>> tabla(filas * 2 + 2, vector<int>(columnas * 2 + 2));
+    int tabla[filas*2+2][columnas*2+2];
 
     // Logica deslizamiento y eliminacion de filas o columnas.
     int tempMenor = 0;
