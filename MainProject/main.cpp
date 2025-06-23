@@ -14,28 +14,28 @@ using namespace std;
 HINSTANCE hInst;
 int currentScreen = SCREEN_MAIN;
 
-// Función para convertir de WCHAR a std::string
-std::string WideStringToString(const WCHAR *wideString)
+// Función para convertir de WCHAR a string
+string WideStringToString(const WCHAR *wideString)
 {
     int size_needed = WideCharToMultiByte(CP_UTF8, 0, wideString, -1, NULL, 0, NULL, NULL);
-    std::string strTo(size_needed, 0);
+    string strTo(size_needed, 0);
     WideCharToMultiByte(CP_UTF8, 0, wideString, -1, &strTo[0], size_needed, NULL, NULL);
     return strTo;
 }
 
-// Función para convertir de std::string a WCHAR
-std::wstring StringToWideString(const std::string &str)
+// Función para convertir de string a WCHAR
+wstring StringToWideString(const string &str)
 {
     int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);
-    std::wstring wstrTo(size_needed, 0);
+    wstring wstrTo(size_needed, 0);
     MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstrTo[0], size_needed);
     return wstrTo;
 }
 
 // Función para validar y obtener los datos de entrada
 bool GetInputData(HWND hwndDlg, int &filas, int &columnas,
-                  std::vector<std::vector<int>> &tablaCost,
-                  std::vector<int> &oferta, std::vector<int> &demanda)
+                  vector<vector<int>> &tablaCost,
+                  vector<int> &oferta, vector<int> &demanda)
 {
     // Obtener número de filas y columnas
     filas = GetDlgItemInt(hwndDlg, IDC_ROWS, NULL, FALSE);
@@ -50,10 +50,10 @@ bool GetInputData(HWND hwndDlg, int &filas, int &columnas,
     // Obtener los datos de costos
     WCHAR costText[5000];
     GetDlgItemText(hwndDlg, IDC_EDIT_COSTS, costText, 5000);
-    std::string costStr = WideStringToString(costText);
-    std::istringstream costStream(costStr);
+    string costStr = WideStringToString(costText);
+    istringstream costStream(costStr);
 
-    tablaCost.resize(filas, std::vector<int>(columnas));
+    tablaCost.resize(filas, vector<int>(columnas));
     for (int i = 0; i < filas; i++)
     {
         for (int j = 0; j < columnas; j++)
@@ -69,8 +69,8 @@ bool GetInputData(HWND hwndDlg, int &filas, int &columnas,
     // Obtener los datos de oferta
     WCHAR supplyText[1000];
     GetDlgItemText(hwndDlg, IDC_EDIT_SUPPLY, supplyText, 1000);
-    std::string supplyStr = WideStringToString(supplyText);
-    std::istringstream supplyStream(supplyStr);
+    string supplyStr = WideStringToString(supplyText);
+    istringstream supplyStream(supplyStr);
 
     oferta.resize(filas);
     for (int i = 0; i < filas; i++)
@@ -85,8 +85,8 @@ bool GetInputData(HWND hwndDlg, int &filas, int &columnas,
     // Obtener los datos de demanda
     WCHAR demandText[1000];
     GetDlgItemText(hwndDlg, IDC_EDIT_DEMAND, demandText, 1000);
-    std::string demandStr = WideStringToString(demandText);
-    std::istringstream demandStream(demandStr);
+    string demandStr = WideStringToString(demandText);
+    istringstream demandStream(demandStr);
 
     demanda.resize(columnas);
     for (int j = 0; j < columnas; j++)
@@ -105,17 +105,17 @@ bool GetInputData(HWND hwndDlg, int &filas, int &columnas,
 void SolveNorthwest(HWND hwndDlg)
 {
     int filas, columnas;
-    std::vector<std::vector<int>> tablaCost;
-    std::vector<int> oferta, demanda;
+    vector<vector<int>> tablaCost;
+    vector<int> oferta, demanda;
 
     if (!GetInputData(hwndDlg, filas, columnas, tablaCost, oferta, demanda))
         return;
 
     // Resolver el problema utilizando el método del Noroeste
-    std::string result = solveNorthwestMethod(filas, columnas, tablaCost, oferta, demanda);
+    string result = solveNorthwestMethod(filas, columnas, tablaCost, oferta, demanda);
 
     // Mostrar el resultado en el cuadro de texto de resultados
-    std::wstring wResult = StringToWideString(result);
+    wstring wResult = StringToWideString(result);
     SetDlgItemText(hwndDlg, IDC_EDIT_RESULT, wResult.c_str());
 }
 
@@ -123,20 +123,20 @@ void SolveNorthwest(HWND hwndDlg)
 void SolveYimmy(HWND hwndDlg)
 {
     int filas, columnas;
-    std::vector<std::vector<int>> tablaCost;
-    std::vector<int> oferta, demanda;
+    vector<vector<int>> tablaCost;
+    vector<int> oferta, demanda;
 
     if (!GetInputData(hwndDlg, filas, columnas, tablaCost, oferta, demanda))
         return;
 
     // Aquí iría la implementación del método de Yimmy
     // Por ahora mostramos un mensaje indicando que es un placeholder
-    std::string result = "Método de Yimmy (Implementación pendiente)\n\n";
-    result += "Filas: " + std::to_string(filas) + "\n";
-    result += "Columnas: " + std::to_string(columnas) + "\n";
+    string result = "Método de Yimmy (Implementación pendiente)\n\n";
+    result += "Filas: " + to_string(filas) + "\n";
+    result += "Columnas: " + to_string(columnas) + "\n";
     result += "¡Este método será implementado próximamente!";
 
-    std::wstring wResult = StringToWideString(result);
+    wstring wResult = StringToWideString(result);
     SetDlgItemText(hwndDlg, IDC_EDIT_RESULT, wResult.c_str());
 }
 
@@ -144,20 +144,20 @@ void SolveYimmy(HWND hwndDlg)
 void SolveBrayan(HWND hwndDlg)
 {
     int filas, columnas;
-    std::vector<std::vector<int>> tablaCost;
-    std::vector<int> oferta, demanda;
+    vector<vector<int>> tablaCost;
+    vector<int> oferta, demanda;
 
     if (!GetInputData(hwndDlg, filas, columnas, tablaCost, oferta, demanda))
         return;
 
     // Aquí iría la implementación del método de Brayan
     // Por ahora mostramos un mensaje indicando que es un placeholder
-    std::string result = "Método de Brayan (Implementación pendiente)\n\n";
-    result += "Filas: " + std::to_string(filas) + "\n";
-    result += "Columnas: " + std::to_string(columnas) + "\n";
+    string result = "Método de Brayan (Implementación pendiente)\n\n";
+    result += "Filas: " + to_string(filas) + "\n";
+    result += "Columnas: " + to_string(columnas) + "\n";
     result += "¡Este método será implementado próximamente!";
 
-    std::wstring wResult = StringToWideString(result);
+    wstring wResult = StringToWideString(result);
     SetDlgItemText(hwndDlg, IDC_EDIT_RESULT, wResult.c_str());
 }
 
@@ -237,7 +237,7 @@ void PrepareDataScreen(HWND hwndDlg)
     }
 
     // Generar valores por defecto para los controles de la pantalla 3
-    std::wstring defaultCosts;
+    wstring defaultCosts;
     for (int i = 0; i < filas; i++)
     {
         for (int j = 0; j < columnas; j++)
@@ -250,13 +250,13 @@ void PrepareDataScreen(HWND hwndDlg)
         }
     }
 
-    std::wstring defaultSupply;
+    wstring defaultSupply;
     for (int i = 0; i < filas; i++)
     {
         defaultSupply += L"0 ";
     }
 
-    std::wstring defaultDemand;
+    wstring defaultDemand;
     for (int j = 0; j < columnas; j++)
     {
         defaultDemand += L"0 ";
