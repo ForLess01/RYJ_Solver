@@ -83,6 +83,25 @@ int main()
 
     int tabla[filas*2+2][columnas*2+2];
 
+    // Eleccion del metodo
+    switch (opcion) {
+        case 1:
+            //ejecutarHeuristica1(filas, columnas, tablaCost, tablaVal);
+            break;
+        case 2:
+            // ejecutarHeuristica2(filas, columnas, tablaCost, tablaVal);
+            break;
+        case 3:
+            // ejecutarHeuristica3(filas, columnas, tablaCost, tablaVal);
+            break;
+        case 0:
+            cout << "Saliendo..." << endl;
+            break;
+        default:
+            cout << "Opción inválida." << endl;
+    }
+
+
     // Logica deslizamiento y eliminacion de filas o columnas.
 
 
