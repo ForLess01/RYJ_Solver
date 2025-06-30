@@ -57,7 +57,10 @@ int main()
     }
 
     int tablaCost [filas][columnas];
-    int tablaVal [filas+1][columnas+1] = {-1};
+    int tablaVal [filas+1][columnas+1];
+    for (int i = 0; i < filas+1; i++)
+        for (int j = 0; j < columnas+1; j++)
+            tablaVal[i][j] = 0;
 
     cout << "Introduzca los costos para cada celda de la tabla(fila * fila):" << endl;
     for (int i = 0; i < filas; i++)
