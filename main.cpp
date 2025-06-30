@@ -57,10 +57,7 @@ int main()
     }
 
     int tablaCost [filas][columnas];
-    int tablaVal [filas+1][columnas+1]; 
-    for (int i = 0; i < filas; i++)
-        for (int j = 0; j < columnas; j++)
-            tablaVal[i][j] = -1;
+    int tablaVal [filas+1][columnas+1] = {-1};
 
     cout << "Introduzca los costos para cada celda de la tabla(fila * fila):" << endl;
     for (int i = 0; i < filas; i++)
@@ -77,7 +74,9 @@ int main()
         cin >> tablaVal[filas][j];
 
 
+    // Verificacion de Balanceo => OfertaTotal = DemandaTotal
     int OfertaTotal = 0, DemandaTotal = 0;
+
     for (int i = 0; i < filas; i++)
     {
         OfertaTotal += tablaVal[i][columnas];
@@ -160,7 +159,81 @@ int main()
 
             break;
         case 3:
-            // ejecutarHeuristica3(filas, columnas, tablaCost, tablaVal);
+            {
+                int remSupply[filas];
+                int remDemand[columnas];
+                bool basicVars[filas][columnas];
+
+                for (int i = 0; i < filas; i++) {
+                    remSupply[i] = tablaVal[i][columnas];
+                    for (int j = 0; j < columnas; j++) {
+                        basicVars[i][j] = false;
+                    }
+                }
+                for (int j = 0; j < columnas; j++) {
+                    remDemand[j] = tablaVal[filas][j];
+                }
+
+                // --- Fase 1: Asignación Inicial por Filas ---
+                for (int i = 0; i < filas; i++) {
+                    if (remSupply[i] == 0) continue;
+                    int minCostInRow = 999999;
+                    for (int j = 0; j < columnas; j++) {
+                        if (tablaCost[i][j] < minCostInRow) {
+                            minCostInRow = tablaCost[i][j];
+                        }
+                    }
+                    for (int j = 0; j < columnas; j++) {
+                        if (tablaCost[i][j] == minCostInRow) {
+                            if (remSupply[i] == 0) break;
+                            int amount = min(remSupply[i], remDemand[j]);
+                            tablaVal[i][j] += amount;
+                            basicVars[i][j] = true;
+                            remSupply[i] -= amount;
+                            remDemand[j] -= amount;
+                        }
+                    }
+                }
+
+                // --- Fase 2: Completitud por Columnas ---
+                struct Candidate { int cost; int index; };
+
+                for (int j = 0; j < columnas; j++) {
+                    int iterGuard = 0;
+                    while (remDemand[j] > 0 && iterGuard < filas + 1) {
+                        iterGuard++;
+                        Candidate candidates[filas];
+                        for (int i = 0; i < filas; i++) {
+                            candidates[i].cost = tablaCost[i][j];
+                            candidates[i].index = i;
+                        }
+                        for(int k=0; k<filas-1; k++) {
+                            for(int l=0; l<filas-k-1; l++) {
+                                if (candidates[l].cost > candidates[l+1].cost ||
+                                (candidates[l].cost == candidates[l+1].cost && candidates[l].index > candidates[l+1].index)) {
+                                    Candidate temp = candidates[l];
+                                    candidates[l] = candidates[l+1];
+                                    candidates[l+1] = temp;
+                                }
+                            }
+                        }
+                        bool allocatedInThisIteration = false;
+                        for (int k = 0; k < filas; k++) {
+                            int i_cand = candidates[k].index;
+                            if (remSupply[i_cand] > 0 && !basicVars[i_cand][j]) {
+                                int amount = min(remSupply[i_cand], remDemand[j]);
+                                tablaVal[i_cand][j] += amount;
+                                basicVars[i_cand][j] = true;
+                                remSupply[i_cand] -= amount;
+                                remDemand[j] -= amount;
+                                allocatedInThisIteration = true;
+                                break;
+                            }
+                        }
+                        if (!allocatedInThisIteration) break;
+                    }
+                }
+            }
             break;
         case 0:
             cout << "Saliendo..." << endl;
@@ -168,10 +241,6 @@ int main()
         default:
             cout << "Opción inválida." << endl;
     }
-
-
-    // Logica deslizamiento y eliminacion de filas o columnas.
-
 
     // Calculo de Z
 
