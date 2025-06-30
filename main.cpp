@@ -17,14 +17,24 @@ int main()
     cout << "------------------------------------" << endl;
     int opcion;
     do {
-        cout << "\nSeleccione un método:\n"
-             << " 1) Método 1\n"
-             << " 2) Método 2\n"
-             << " 3) Método 3\n"
-             << " 0) Salir\n"
-             << "Opción: ";
+        cout << "\nSeleccione un metodo:\n"
+            << " 1) Metodo 1\n"
+            << " 2) Metodo 2\n"
+            << " 3) Metodo 3\n"
+            << " 0) Salir\n"
+            << "Opcion: ";
         cin >> opcion;
-    } while (opcion != 0);
+
+        if (opcion == 0) {
+            cout << "Saliendo..." << endl;
+            return 0;
+        }
+
+        if (opcion < 0 || opcion > 3) {
+            cout << "Opcion invalida, intente de nuevo.\n";
+        }
+
+    } while (opcion < 1 || opcion > 3);
 
     cout << "Introduzca numero de filas: ";
     int filas;
@@ -47,7 +57,10 @@ int main()
     }
 
     int tablaCost [filas][columnas];
-    int tablaVal [filas+1][columnas+1] = {0}; // Inicializar la tabla de costos con ceros
+    int tablaVal [filas+1][columnas+1]; 
+    for (int i = 0; i < filas; i++)
+        for (int j = 0; j < columnas; j++)
+            tablaVal[i][j] = -1;
 
     cout << "Introduzca los costos para cada celda de la tabla(fila * fila):" << endl;
     for (int i = 0; i < filas; i++)
@@ -63,7 +76,6 @@ int main()
     for (int j = 0; j < columnas; j++)
         cin >> tablaVal[filas][j];
 
-    // Verificacion de Balanceo => OfertaTotal = DemandaTotal
 
     int OfertaTotal = 0, DemandaTotal = 0;
     for (int i = 0; i < filas; i++)
@@ -82,14 +94,70 @@ int main()
     }
 
     int tabla[filas*2+2][columnas*2+2];
-
+    int total = 0;
     // Eleccion del metodo
     switch (opcion) {
         case 1:
-            //ejecutarHeuristica1(filas, columnas, tablaCost, tablaVal);
+            //brayan
             break;
         case 2:
-            // ejecutarHeuristica2(filas, columnas, tablaCost, tablaVal);
+            while (true) {
+                int fila_min = -1, min_oferta = 99999;
+                for (int i = 0; i < filas; i++) {
+                    if (tablaVal[i][columnas] > 0 && tablaVal[i][columnas] < min_oferta) {
+                        min_oferta = tablaVal[i][columnas];
+                        fila_min = i;
+                    }
+                }
+                if (fila_min == -1) break;
+
+                int col_min = -1, min_costo = 99999;
+                for (int j = 0; j < columnas; j++) {
+                    if (tablaVal[filas][j] > 0 && tablaCost[fila_min][j] < min_costo) {
+                        min_costo = tablaCost[fila_min][j];
+                        col_min = j;
+                    }
+                }
+
+                if (col_min == -1) break;
+
+                int cantidad = min(tablaVal[fila_min][columnas], tablaVal[filas][col_min]);
+                tablaVal[fila_min][col_min] = cantidad;
+
+                if (tablaVal[fila_min][columnas] == tablaVal[filas][col_min]) {
+                    int segundo_col_min = -1, segundo_costo = 99999;
+                    for (int j = 0; j < columnas; j++) {
+                        if (j != col_min && tablaVal[filas][j] > 0 && tablaCost[fila_min][j] < segundo_costo) {
+                            segundo_costo = tablaCost[fila_min][j];
+                            segundo_col_min = j;
+                        }
+                    }
+
+                    if (segundo_col_min != -1) {
+                        tablaVal[fila_min][segundo_col_min] = 0;
+                    }
+                }
+
+                tablaVal[fila_min][columnas] -= cantidad;
+                tablaVal[filas][col_min] -= cantidad;
+            }
+
+            cout << "\nAsignacion final:\n";
+            for (int i = 0; i < filas; i++) {
+                for (int j = 0; j < columnas; j++) {
+                    cout << tablaVal[i][j] << "\t";
+                }
+                cout << endl;
+            }
+
+
+            for (int i = 0; i < filas; i++)
+                for (int j = 0; j < columnas; j++)
+                    if (tablaVal[i][j] != -1)
+                        total += tablaVal[i][j] * tablaCost[i][j];
+
+            cout << "\nCosto total: " << total << endl;
+
             break;
         case 3:
             // ejecutarHeuristica3(filas, columnas, tablaCost, tablaVal);
