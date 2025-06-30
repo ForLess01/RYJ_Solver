@@ -144,22 +144,6 @@ int main()
                 tablaVal[filas][col_min] -= cantidad;
             }
 
-            cout << "\nAsignacion final:\n";
-            for (int i = 0; i < filas; i++) {
-                for (int j = 0; j < columnas; j++) {
-                    cout << tablaVal[i][j] << "\t";
-                }
-                cout << endl;
-            }
-
-
-            for (int i = 0; i < filas; i++)
-                for (int j = 0; j < columnas; j++)
-                    if (tablaVal[i][j] != -1)
-                        total += tablaVal[i][j] * tablaCost[i][j];
-
-            cout << "\nCosto total: " << total << endl;
-
             break;
         case 3:
             {
