@@ -11,8 +11,20 @@ int min(int a, int b)
 }
 
 int main()
-{
-    cout << "Northwest Method - Problem of Transportation" << endl;
+{   
+    
+    cout << "Bienvenido : H3urisTius Suit Solver" << endl;
+    cout << "------------------------------------" << endl;
+    int opcion;
+    do {
+        cout << "\nSeleccione un método:\n"
+             << " 1) Método 1\n"
+             << " 2) Método 2\n"
+             << " 3) Método 3\n"
+             << " 0) Salir\n"
+             << "Opción: ";
+        cin >> opcion;
+    } while (opcion != 0);
 
     cout << "Introduzca numero de filas: ";
     int filas;
