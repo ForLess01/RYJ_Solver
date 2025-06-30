@@ -62,7 +62,7 @@ int main()
         for (int j = 0; j < columnas+1; j++)
             tablaVal[i][j] = 0;
 
-    cout << "Introduzca los costos para cada celda de la tabla(fila * fila):" << endl;
+    cout << "Introduzca los costos para cada celda de la tabla(fila a fila):" << endl;
     for (int i = 0; i < filas; i++)
         for (int j = 0; j < columnas; j++)
             cin >> tablaCost[i][j];
@@ -100,7 +100,142 @@ int main()
     // Eleccion del metodo
     switch (opcion) {
         case 1:
-            //brayan
+            {
+                int oferta_temp[filas];
+                for(int i=0; i<filas; ++i) oferta_temp[i] = tablaVal[i][columnas];
+
+                int demanda_temp[columnas];
+                for(int j=0; j<columnas; ++j) demanda_temp[j] = tablaVal[filas][j];
+
+                bool primerIteracion = true;
+                bool soloFilas = true;
+
+                while (true) {
+                    int sumaOferta = 0, sumaDemanda = 0;
+                    for (int i = 0; i < filas; ++i) sumaOferta += oferta_temp[i];
+                    for (int j = 0; j < columnas; ++j) sumaDemanda += demanda_temp[j];
+                    if (sumaOferta == 0 || sumaDemanda == 0) break;
+
+                    int rangosFilas[filas];
+                    for(int i=0; i<filas; ++i) rangosFilas[i] = 0;
+
+                    int rangosColumnas[columnas];
+                    for(int j=0; j<columnas; ++j) rangosColumnas[j] = 0;
+                    
+                    for (int i = 0; i < filas; ++i) {
+                        int minimoFila = 999999, maximoFila = -1;
+                        if (oferta_temp[i] > 0) {
+                            for (int j = 0; j < columnas; ++j) {
+                                if (demanda_temp[j] > 0) {
+                                    if(tablaCost[i][j] < minimoFila) minimoFila = tablaCost[i][j];
+                                    if(tablaCost[i][j] > maximoFila) maximoFila = tablaCost[i][j];
+                                }
+                            }
+                            if(maximoFila != -1) rangosFilas[i] = maximoFila - minimoFila;
+                        }
+                    }
+                    for (int j = 0; j < columnas; ++j) {
+                        int minimoColumna = 999999, maximoColumna = -1;
+                        if(demanda_temp[j] > 0) {
+                            for (int i = 0; i < filas; ++i) {
+                                if (oferta_temp[i] > 0) {
+                                    if(tablaCost[i][j] < minimoColumna) minimoColumna = tablaCost[i][j];
+                                    if(tablaCost[i][j] > maximoColumna) maximoColumna = tablaCost[i][j];
+                                }
+                            }
+                            if(maximoColumna != -1) rangosColumnas[j] = maximoColumna - minimoColumna;
+                        }
+                    }
+
+                    int maxRangoFila = -1, indiceMaxRangoFila = -1;
+                    int maxRangoColumna = -1, indiceMaxRangoColumna = -1;
+
+                    if (primerIteracion) {
+                        for (int i = 0; i < filas; ++i)
+                            if (oferta_temp[i] > 0 && rangosFilas[i] > maxRangoFila) {
+                                maxRangoFila = rangosFilas[i];
+                                indiceMaxRangoFila = i;
+                            }
+                        for (int j = 0; j < columnas; ++j)
+                            if (demanda_temp[j] > 0 && rangosColumnas[j] > maxRangoColumna) {
+                                maxRangoColumna = rangosColumnas[j];
+                                indiceMaxRangoColumna = j;
+                            }
+                        soloFilas = (maxRangoFila >= maxRangoColumna);
+                        primerIteracion = false;
+                    } else {
+                        if (soloFilas) {
+                            for (int i = 0; i < filas; ++i)
+                                if (oferta_temp[i] > 0 && rangosFilas[i] > maxRangoFila) {
+                                    maxRangoFila = rangosFilas[i];
+                                    indiceMaxRangoFila = i;
+                                }
+                        } else {
+                            for (int j = 0; j < columnas; ++j)
+                                if (demanda_temp[j] > 0 && rangosColumnas[j] > maxRangoColumna) {
+                                    maxRangoColumna = rangosColumnas[j];
+                                    indiceMaxRangoColumna = j;
+                                }
+                        }
+                    }
+
+                    bool esFila = soloFilas;
+                    int indice = esFila ? indiceMaxRangoFila : indiceMaxRangoColumna;
+
+                    if (indice == -1) {
+                        int r = -1, c = -1;
+                         for(int i=0; i<filas; ++i){
+                            if(oferta_temp[i] > 0) { r = i; break; }
+                         }
+                         for(int j=0; j<columnas; ++j){
+                            if(demanda_temp[j] > 0) { c = j; break; }
+                         }
+                         if (r != -1 && c != -1) {
+                             int cantidad = min(oferta_temp[r], demanda_temp[c]);
+                             tablaVal[r][c] += cantidad;
+                             oferta_temp[r] -= cantidad;
+                             demanda_temp[c] -= cantidad;
+                         } else {
+                            break;
+                         }
+                         continue;
+                    }
+
+
+                    int menorCosto = 999999, indiceMenor = -1;
+                    if (esFila) {
+                        for (int j = 0; j < columnas; ++j)
+                            if (demanda_temp[j] > 0 && tablaCost[indice][j] < menorCosto) {
+                                menorCosto = tablaCost[indice][j];
+                                indiceMenor = j;
+                            }
+                    } else {
+                        for (int i = 0; i < filas; ++i)
+                            if (oferta_temp[i] > 0 && tablaCost[i][indice] < menorCosto) {
+                                menorCosto = tablaCost[i][indice];
+                                indiceMenor = i;
+                            }
+                    }
+
+                    if(indiceMenor == -1) {
+                        primerIteracion = true;
+                        continue;
+                    };
+
+                    int valorAsignado;
+                    if (esFila) {
+                        valorAsignado = min(oferta_temp[indice], demanda_temp[indiceMenor]);
+                        tablaVal[indice][indiceMenor] += valorAsignado;
+                        oferta_temp[indice] -= valorAsignado;
+                        demanda_temp[indiceMenor] -= valorAsignado;
+                    } else {
+                        valorAsignado = min(oferta_temp[indiceMenor], demanda_temp[indice]);
+                        tablaVal[indiceMenor][indice] += valorAsignado;
+                        oferta_temp[indiceMenor] -= valorAsignado;
+                        demanda_temp[indice] -= valorAsignado;
+                    }
+                }
+            }
             break;
         case 2:
             while (true) {
