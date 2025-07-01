@@ -20,7 +20,7 @@ DisableProgramGroupPage=no
 
 [Files]
 ; El ejecutable principal de tu aplicación
-Source: "..\MainProject\bin\Debug\H3urisTius.exe"; DestDir: "{app}"
+Source: "..\main.exe"; DestDir: "{app}"
 ; El icono, si deseas copiarlo a la carpeta de instalación
 Source: "truck1.ico"; DestDir: "{app}"; Flags: ignoreversion
 
@@ -30,4 +30,4 @@ Name: "{group}\H3urisTius - Transport Solver"; Filename: "{app}\H3urisTius.exe";
 Name: "{commondesktop}\H3urisTius - Transport Solver"; Filename: "{app}\H3urisTius.exe"; IconFilename: "{app}\truck1.ico"
 
 [Run]
-Filename: "{app}\H3urisTius.exe"; Description: "Ejecutar aplicación"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\main.exe"; Description: "Ejecutar aplicación"; Flags: nowait postinstall skipifsilent
